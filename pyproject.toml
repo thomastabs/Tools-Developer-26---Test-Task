@@ -23,4 +23,5 @@ packages = [
 ]
 
 [tool.poetry.scripts]
+tool = "tool.tool:cli"
 cli-tool = "tool.tool:cli"
