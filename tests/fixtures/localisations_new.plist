@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>version</key>
+	<string>1.0.1</string>
+	<key>localisations</key>
+	<dict>
+		<key>play-button</key>
+		<dict>
+			<key>en-US</key>
+			<string>Play as Guest</string>
+			<key>fr</key>
+			<string></string>
+		</dict>
+		<key>countdown</key>
+		<dict>
+			<key>en-US</key>
+			<string>Starting in...</string>
+			<key>fr</key>
+			<string>Commence dans %u...</string>
+			<key>es</key>
+			<string>Empieza en %u...</string>
+		</dict>
+		<key>new-offer</key>
+		<dict>
+			<key>en-US</key>
+			<string>Buy this limited time pack today and get coins, cues, boosters, tickets, and a long list of other rewards that may not fit inside the original offer modal without design review.</string>
+			<key>fr</key>
+			<string>Nouveau pack</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>version</key>
+	<string>1.0.0</string>
+	<key>localisations</key>
+	<dict>
+		<key>play-button</key>
+		<dict>
+			<key>en-US</key>
+			<string>Play\nas Guest</string>
+			<key>fr</key>
+			<string>Jouer en\ntant qu'invité</string>
+			<key>es</key>
+			<string>Jugar\ncomo invitado</string>
+		</dict>
+		<key>countdown</key>
+		<dict>
+			<key>en-US</key>
+			<string>Starting in %u...</string>
+			<key>fr</key>
+			<string>Commence dans % ...</string>
+			<key>es</key>
+			<string>Empieza en %u...</string>
+		</dict>
+	</dict>
+</dict>
+</plist>
