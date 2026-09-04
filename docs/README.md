@@ -10,3 +10,9 @@ I'm interested in CLI tools since I work with Linux Ubuntu a lot, and I'm going 
 
 ---
 
+Instances of errors or bad changes within a localisation:
+
+- a translation that quietly dropped a %@ placeholder (so the client crashes or shows a literal %@); THIS SHOULD BE PRIORITIZE SINCE IT COULD BE A BLOCKER
+- a key that lost a language it used to have (so some players see English, or nothing);
+- an empty string;
+- a text that's suddenly three times longer and overflows the button it lives in.
