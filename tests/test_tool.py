@@ -98,6 +98,8 @@ def test_verify_defaults_to_terminal_risks_only(tmp_path):
     result = CliRunner().invoke(cli, ["verify", str(old_path), str(new_path)])
 
     assert result.exit_code == 0
+    assert "SUMMARY" in result.output
+    assert "Ship recommendation: DO NOT SHIP" in result.output
     assert "BLOCKER" in result.output
     assert "placeholder-change" in result.output
     assert "INFO" not in result.output
@@ -126,6 +128,8 @@ def test_report_writes_markdown_with_all_findings(tmp_path):
     assert result.exit_code == 0
     report = output_path.read_text(encoding="utf-8")
     assert "# Localisation Verification Report" in report
+    assert "## Summary" in report
+    assert "Ship recommendation: **DO NOT SHIP**" in report
     assert "## Blocker" in report
     assert "## Info" in report
     assert "added-key" in report

@@ -210,13 +210,14 @@ def is_long_text(text: str) -> bool:
 
 def render_text(old: dict[str, Any], new: dict[str, Any], findings: list[Finding]) -> str:
     lines = ["Localisation verification report", f"Baseline: {old['path']} ({old['version']})", f"Candidate: {new['path']} ({new['version']})", "",]
+    lines.extend(render_text_summary(findings))
+    lines.append("")
 
     if not findings:
-        lines.append("No risks found.")
         return "\n".join(lines)
 
     for severity in ("blocker", "warning", "info"):
-        grouped = [finding for finding in findings if finding.severity == severity]
+        grouped = findings_by_severity(findings, severity)
         if not grouped:
             continue
         lines.append(f"{severity.upper()} ({len(grouped)})")
@@ -230,13 +231,14 @@ def render_text(old: dict[str, Any], new: dict[str, Any], findings: list[Finding
 
 def render_markdown(old: dict[str, Any], new: dict[str, Any], findings: list[Finding]) -> str:
     lines = ["# Localisation Verification Report", "", f"- Baseline: `{old['path']}` (`{old['version']}`)", f"- Candidate: `{new['path']}` (`{new['version']}`)", "",]
+    lines.extend(render_markdown_summary(findings))
+    lines.append("")
 
     if not findings:
-        lines.append("No risks found.")
         return "\n".join(lines)
 
     for severity in ("blocker", "warning", "info"):
-        grouped = [finding for finding in findings if finding.severity == severity]
+        grouped = findings_by_severity(findings, severity)
         if not grouped:
             continue
         lines.append(f"## {severity.title()} ({len(grouped)})")
@@ -247,6 +249,56 @@ def render_markdown(old: dict[str, Any], new: dict[str, Any], findings: list[Fin
         lines.append("")
 
     return "\n".join(lines).rstrip()
+
+
+def render_text_summary(findings: list[Finding]) -> list[str]:
+    summary = count_findings_by_severity(findings)
+    recommendation = get_ship_recommendation(summary)
+
+    return [
+        "SUMMARY",
+        f"- Blockers: {summary['blocker']}",
+        f"- Warnings: {summary['warning']}",
+        f"- Info: {summary['info']}",
+        f"- Ship recommendation: {recommendation}",
+    ]
+
+
+def render_markdown_summary(findings: list[Finding]) -> list[str]:
+    summary = count_findings_by_severity(findings)
+    recommendation = get_ship_recommendation(summary)
+
+    return [
+        "## Summary",
+        "",
+        f"- Blockers: **{summary['blocker']}**",
+        f"- Warnings: **{summary['warning']}**",
+        f"- Info: **{summary['info']}**",
+        f"- Ship recommendation: **{recommendation}**",
+    ]
+
+
+def count_findings_by_severity(findings: list[Finding]) -> dict[str, int]:
+    summary = {"blocker": 0, "warning": 0, "info": 0}
+    for finding in findings:
+        summary[finding.severity] += 1
+    return summary
+
+
+def get_ship_recommendation(summary: dict[str, int]) -> str:
+    if summary["blocker"] > 0:
+        return "DO NOT SHIP"
+    if summary["warning"] > 0:
+        return "REVIEW BEFORE SHIPPING"
+    return "OK TO SHIP"
+
+
+def findings_by_severity(findings: list[Finding], severity: str) -> list[Finding]:
+    grouped_findings = []
+    for finding in findings:
+        if finding.severity == severity:
+            grouped_findings.append(finding)
+    return grouped_findings
 
 
 def format_location(finding: Finding) -> str:
