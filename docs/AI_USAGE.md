@@ -11,7 +11,9 @@ Some specific things AI gave me that I kept:
 - the general `Click` structure with a main `cli()` group and subcommands like `verify` and `report`;
 - the use of Python's built-in `plistlib` to parse the `.plist` files safely instead of reading them as plain text;
 - the idea of returning findings as structured objects with a severity, kind, message, key, and language;
-- the pytest setup with handmade localisation files, including tests for invalid plist files and missing `localisations`.
+- the pytest setup with handmade localisation files, including tests for invalid plist files and missing `localisations`;
+- the summary section with blocker/warning/info counts and a simple ship recommendation;
+- the improved placeholder detection, where the output says if a placeholder is missing, added, reordered, or fixed.
 
 Some specific things AI suggested or implemented that I pushed back on:
 
@@ -21,12 +23,14 @@ Some specific things AI suggested or implemented that I pushed back on:
 
 I verified the AI output by running the actual CLI commands against the provided localisation files and checking that the output matched the issues I had already identified manually. For example, the tool detected removed languages, empty strings, placeholder changes, long text warnings, and the fixed French placeholder.
 
+After improving the placeholder detection, I verified that the output became more useful and less generic. Instead of only saying `placeholder-change`, the tool now reports clearer findings like `missing-placeholder`, `added-placeholder`, `placeholder-order`, and `fixed-placeholder`. I also checked that the French placeholder fix was not reported as a scary warning, because in this case it is actually a correction.
+
 I also verified the implementation with automated tests:
 
 ```bash
 poetry run pytest -q
 ```
 
-The tests use small handmade plist files so the expected behaviour is easier to understand. They cover blocker findings, informational findings, report generation, invalid plist input, missing `localisations`, and the top-level help output.
+The tests use small handmade plist files so the expected behaviour is easier to understand. They cover blocker findings, informational findings, report generation, invalid plist input, missing `localisations`, top-level help output, summary output, and the more specific placeholder detection.
 
 The main surprise was that AI was useful not only for writing the code, but also for helping shape the CLI interface. At the same time, I had to keep reducing the scope when the tool started becoming more complex than I wanted. The final version is intentionally simple: one command to verify in the terminal, and one command to generate a full Markdown report.

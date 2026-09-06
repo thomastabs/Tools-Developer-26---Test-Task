@@ -11,13 +11,13 @@ poetry install
 poetry run tool verify original_localisations/localisations_1_2_0.plist original_localisations/localisations_1_2_1.plist
 ```
 
-By default `verify` only prints `blocker` and `warning` findings, since those are the most relevant for a release decision. To include informational changes too:
+By default `verify` only prints `blocker` and `warning` findings, since those are the most relevant for a release decision. It also prints a small summary with the number of blockers, warnings, info findings, and a ship recommendation like `DO NOT SHIP`, `REVIEW BEFORE SHIPPING`, or `OK TO SHIP`. To include informational changes too:
 
 ```bash
 poetry run tool verify original_localisations/localisations_1_2_0.plist original_localisations/localisations_1_2_1.plist --listall
 ```
 
-To write a Markdown report with all findings:
+To write a Markdown report with all findings, including the summary and the final ship recommendation:
 
 ```bash
 poetry run tool report original_localisations/localisations_1_2_0.plist original_localisations/localisations_1_2_1.plist docs/generated-report.md
@@ -27,11 +27,13 @@ poetry run tool report original_localisations/localisations_1_2_0.plist original
 
 I focused on changes that can realistically break or harm a release: removed localisation keys, removed languages, empty strings, placeholder regressions like losing `%u` or `%@`, suspicious broken placeholders, very long text, lost `\n` line breaks, and candidate files that keep the same internal version as the baseline.
 
-Findings are split into `blocker`, `warning`, and `info`. Removed keys, removed languages, empty strings, and placeholder regressions are blockers. Length and line break issues are warnings because they need UI context. Added keys/languages and fixed broken placeholders are info, because a tool that marks every change as scary becomes noisy quickly.
+For placeholders, I decided to make the output more specific instead of using only a generic "placeholder changed" message. The tool can now say if a placeholder is missing, if a new placeholder was added, if the placeholder order changed, or if a broken placeholder from the old file appears to be fixed in the new file.
+
+Findings are split into `blocker`, `warning`, and `info`. Removed keys, removed languages, empty strings, and missing placeholders are blockers. Added placeholders, length issues, and line break issues are warnings because they need human or UI context. Added keys/languages and fixed broken placeholders are info, because a tool that marks every change as scary becomes noisy quickly.
 
 #### Scope, tests, and next steps
 
-My smallest complete version was: parse both plist files, compare keys/languages, catch empty strings and placeholder regressions, and print a readable terminal report. After that I added `--listall` and the `--risks` arguments, the `report` command, handmade fixture files, invalid plist tests, missing `localisations` tests, and a `.gitignore`.
+My smallest complete version was: parse both plist files, compare keys/languages, catch empty strings and placeholder regressions, and print a readable terminal report. After that I added `--listall` and the `--risks` arguments, the `report` command, the summary section, better placeholder detection, handmade fixture files, invalid plist tests, missing `localisations` tests, and a `.gitignore`.
 
 Run tests with:
 
