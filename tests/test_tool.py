@@ -50,7 +50,7 @@ def test_analyse_risks_detects_release_blockers(tmp_path):
 
     assert finding_kinds(findings) == {
         "empty-string",
-        "placeholder-change",
+        "missing-placeholder",
         "removed-key",
         "removed-language",
         "version",
@@ -101,7 +101,7 @@ def test_verify_defaults_to_terminal_risks_only(tmp_path):
     assert "SUMMARY" in result.output
     assert "Ship recommendation: DO NOT SHIP" in result.output
     assert "BLOCKER" in result.output
-    assert "placeholder-change" in result.output
+    assert "missing-placeholder" in result.output
     assert "INFO" not in result.output
     assert "added-key" not in result.output
 
@@ -178,8 +178,37 @@ def test_cli_with_fixture_localisation_files():
 
     assert result.exit_code == 0
     assert "empty-string" in result.output
-    assert "placeholder-change" in result.output
+    assert "missing-placeholder" in result.output
     assert "removed-language" in result.output
     assert "line-breaks" in result.output
     assert "fixed-placeholder" in result.output
     assert "added-key" in result.output
+
+
+def test_placeholder_detection_reports_missing_added_and_order_changes(tmp_path):
+    old_path = tmp_path / "old.plist"
+    new_path = tmp_path / "new.plist"
+    write_plist(
+        old_path,
+        "1.0.0",
+        {
+            "missing": {"en-US": "Get %u coins and %u gems"},
+            "added": {"en-US": "You won coins"},
+            "order": {"en-US": "Give %@ %u"},
+        },
+    )
+    write_plist(
+        new_path,
+        "1.0.1",
+        {
+            "missing": {"en-US": "Get %u coins and gems"},
+            "added": {"en-US": "You won %u coins"},
+            "order": {"en-US": "Give %u %@"},
+        },
+    )
+
+    _, _, findings = analyse(old_path, new_path, "list")
+
+    assert "missing-placeholder" in finding_kinds(findings)
+    assert "added-placeholder" in finding_kinds(findings)
+    assert "placeholder-order" in finding_kinds(findings)

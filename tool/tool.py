@@ -172,12 +172,7 @@ def compare_text(key: str, language: str, old_text: str, new_text: str) -> list[
     if not str(new_text).strip():
         findings.append(Finding("blocker", "empty-string", "Translation became empty.", key, language))
 
-    old_placeholders = PLACEHOLDER_PATTERN.findall(str(old_text))
-    new_placeholders = PLACEHOLDER_PATTERN.findall(str(new_text))
-    if old_placeholders and old_placeholders != new_placeholders:
-        findings.append(
-            Finding("blocker", "placeholder-change", f"Placeholder changed from {old_placeholders} to {new_placeholders}.", key, language)
-        )
+    findings.extend(compare_placeholders(key, language, str(old_text), str(new_text)))
 
     old_broken = bool(BROKEN_PLACEHOLDER_PATTERN.search(str(old_text)))
     new_broken = bool(BROKEN_PLACEHOLDER_PATTERN.search(str(new_text)))
@@ -195,6 +190,66 @@ def compare_text(key: str, language: str, old_text: str, new_text: str) -> list[
         findings.append(Finding("warning", "line-breaks", "Translation lost all explicit line breaks.", key, language))
 
     return findings
+
+
+def compare_placeholders(key: str, language: str, old_text: str, new_text: str) -> list[Finding]:
+    findings: list[Finding] = []
+    old_placeholders = extract_placeholders(old_text)
+    new_placeholders = extract_placeholders(new_text)
+    old_has_broken_placeholder = bool(BROKEN_PLACEHOLDER_PATTERN.search(old_text))
+
+    if not old_placeholders and not new_placeholders:
+        return findings
+
+    if old_placeholders == new_placeholders:
+        return findings
+
+    if old_has_broken_placeholder and not old_placeholders:
+        return findings
+
+    missing_placeholders = missing_items(old_placeholders, new_placeholders)
+    added_placeholders = missing_items(new_placeholders, old_placeholders)
+
+    if missing_placeholders:
+        findings.append(
+            Finding("blocker", "missing-placeholder", f"Missing placeholder(s): {format_placeholder_list(missing_placeholders)}.", key, language,)
+        )
+
+    if added_placeholders:
+        findings.append(
+            Finding("warning", "added-placeholder", f"New placeholder(s): {format_placeholder_list(added_placeholders)}.", key, language,)
+        )
+
+    if not missing_placeholders and not added_placeholders:
+        findings.append(
+            Finding("warning", "placeholder-order", f"Placeholder order changed from {format_placeholder_list(old_placeholders)} to {format_placeholder_list(new_placeholders)}.", key, language, )
+        )
+
+    return findings
+
+
+def extract_placeholders(text: str) -> list[str]:
+    placeholders = []
+    for match in PLACEHOLDER_PATTERN.finditer(text):
+        placeholders.append(match.group())
+    return placeholders
+
+
+def missing_items(expected_items: list[str], actual_items: list[str]) -> list[str]:
+    missing = []
+    remaining_items = actual_items.copy()
+
+    for expected_item in expected_items:
+        if expected_item in remaining_items:
+            remaining_items.remove(expected_item)
+        else:
+            missing.append(expected_item)
+
+    return missing
+
+
+def format_placeholder_list(placeholders: list[str]) -> str:
+    return ", ".join(placeholders)
 
 
 def is_long_text(text: str) -> bool:
