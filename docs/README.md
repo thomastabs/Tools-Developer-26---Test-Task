@@ -1,6 +1,6 @@
 ## Localisation Change Detector
 
-I built this as a Python CLI tool because I'm not really a fan of UI/UX visuals, so a web app for example would be way to out of scope, the main user is probably a releaser or engineer who wants a fast ship/no-ship signal from the terminal or CI. I used `Poetry` for project setup, `Click` for the CLI, and Python's built-in `plistlib` to parse the `.plist` files as structured data instead of doing a raw text diff.
+I built this as a Python CLI tool because I'm not really a fan of UI/UX visuals, so a web app for example would be way too out of scope for me personally, the main user would probably be a releaser or engineer who wants a fast ship/no-ship signal from the terminal or CI. I used `Poetry` for project setup, `Click` for the CLI, and Python's built-in `plistlib` to parse the `.plist` files as structured data instead of doing a raw text diff.
 
 The tool compares a baseline localisation file against a candidate release file and tries to answer: what changed, and which changes should we worry about before shipping?
 
