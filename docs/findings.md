@@ -28,3 +28,11 @@ Prioritization of errors and ranked by risk:
 4. an empty string;
 5. a text that's suddenly longer and overflows the button it lives in.
 
+**How I would propose the team uses this tool**
+
+I would propose using this tool as a permanent safety check in the release process, especially before a localisation file is deployed to production. The most useful place for it would be in the CI/CD pipeline, running automatically when a new localisation plist is added or changed.
+
+For example, during a deploy, the pipeline could compare the current production localisation file against the candidate file:
+
+```bash
+poetry run tool verify original_localisations/localisations_1_2_0.plist original_localisations/localisations_1_2_1.plist
