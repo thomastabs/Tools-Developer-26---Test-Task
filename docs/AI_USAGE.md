@@ -11,8 +11,6 @@ Some specific things AI gave me that I kept:
 - the general `Click` structure with a main `cli()` group and subcommands like `verify` and `report`;
 - the use of Python's built-in `plistlib` to parse the `.plist` files safely instead of reading them as plain text;
 - the idea of returning findings as structured objects with a severity, kind, message, key, and language;
-- the pytest setup with handmade localisation files, including tests for invalid plist files and missing `localisations`;
-- the summary section with blocker/warning/info counts and a simple ship recommendation;
 - the improved placeholder detection, where the output says if a placeholder is missing, added, reordered, or fixed.
 
 Some specific things AI suggested or implemented that I pushed back on:
